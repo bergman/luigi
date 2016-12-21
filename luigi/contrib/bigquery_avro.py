@@ -38,16 +38,16 @@ class BigQueryLoadAvro(BigQueryLoadTask):
         return [self._avro_uri(x) for x in flatten(self.input())]
 
     def _get_input_schema(self):
-        '''Arbitrarily picks an object in input and reads the Avro schema from it.'''
+        '''Picks the last object in input and reads the Avro schema from it.'''
         assert avro, 'avro module required'
 
-        input_target = flatten(self.input())[0]
+        input_target = flatten(self.input())[-1]
         input_fs = input_target.fs if hasattr(input_target, 'fs') else GCSClient()
-        input_uri = self.source_uris()[0]
+        input_uri = self.source_uris()[-1]
         if '*' in input_uri:
             file_uris = list(input_fs.list_wildcard(input_uri))
             if file_uris:
-                input_uri = file_uris[0]
+                input_uri = file_uris[-1]
             else:
                 raise RuntimeError('No match for ' + input_uri)
 
